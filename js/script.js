@@ -14,43 +14,49 @@ Array.from(operatordivs).forEach(d => {
     d.addEventListener('click', logInfo);
 })
 
-function logInfo(e){
-    if(e.target.textContent == "="){
-        screenText = screenText.trim();
-        let arr = [];
-        if(screenText.includes("+")){
-           arr =  screenText.split("+");
-           arr.unshift("+");
-        }
-        else if(screenText.includes("-")){
-            arr =  screenText.split("-");
-           arr.unshift("-");
+function logInfo(e) {
+    switch (e.target.textContent) {
+        case "=":
+            let arr = GetOperatorAndNumbers();
+            result.textContent = operateFunction(arr[0], arr[1], arr[2]);
+            break;
 
-         }
-         else if(screenText.includes("/")){
-            arr =  screenText.split("/");
-           arr.unshift("/");
+        case "C":
+            clear();
+        break;
 
-         }
-         else if(screenText.includes("*")){
-            arr =  screenText.split("*");
-           arr.unshift("*");
-
-         }
-
-        result.textContent = operateFunction(arr[0],arr[1], arr[2] )
+        default:
+            screenText += e.target.textContent;
+            screen.textContent = screenText;
+            console.log(e.target.textContent);
+            break;
     }
 
-    else{
+}
 
-        screenText += e.target.textContent;
-        screen.textContent = screenText;
-        console.log(e.target.textContent);
+function GetOperatorAndNumbers() {
+    screenText = screenText.trim();
+    let arr = [];
+    if (screenText.includes("+")) {
+        arr = screenText.split("+");
+        arr.unshift("+");
     }
+    else if (screenText.includes("-")) {
+        arr = screenText.split("-");
+        arr.unshift("-");
 
+    }
+    else if (screenText.includes("/")) {
+        arr = screenText.split("/");
+        arr.unshift("/");
 
+    }
+    else if (screenText.includes("*")) {
+        arr = screenText.split("*");
+        arr.unshift("*");
 
-
+    }
+    return arr;
 }
 
 
@@ -61,20 +67,26 @@ function operateFunction(operator, param, param1) {
         case "+":
             return param + param1;
             break;
-        
+
         case "-":
             return param - param1;
             break;
-        
+
         case "*":
             return param * param1;
             break;
-        
+
         case "/":
             return param / param1;
             break;
-    
+
         default:
             break;
     }
+}
+
+function clear() {
+    result.textContent = '0';
+    screen.textContent = '';
+    screenText = '';
 }

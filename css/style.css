@@ -16,8 +16,8 @@
 }
 
 .calculator {
-    height: 600px;
-    width: 400px;
+    height: 500px;
+    width: 300px;
     /* background: aliceblue; */
     /* border: 2px solid; */
     display: flex;
@@ -71,10 +71,11 @@
 
 .screen {
     flex: 1;
-    font-size: 64px;
+    font-size: 54px;
 }
 
-.screen {
-    flex: 1;
-    font-size: 64px;
+
+div#result {
+    flex: 3;
+    font-size: 90px;
 }
