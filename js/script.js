@@ -17,46 +17,71 @@ Array.from(operatordivs).forEach(d => {
 function logInfo(e) {
     switch (e.target.textContent) {
         case "=":
-            let arr = GetOperatorAndNumbers();
-            result.textContent = operateFunction(arr[0], arr[1], arr[2]);
+            GetOperatorAndNumbers();
             break;
 
         case "C":
             clear();
         break;
 
+        case "CE":
+            screenText = screenText.length >= 1 ? screenText.substring(0 , screenText.length -1) : '';
+            setInfoScreen(screenText);
+            break;
+
         default:
             screenText += e.target.textContent;
-            screen.textContent = screenText;
-            console.log(e.target.textContent);
+            setInfoScreen(screenText);
             break;
     }
 
 }
 
+function setResultScreen(message) {
+    result.textContent = message;
+    
+}
+
+function setInfoScreen(message){
+    screen.textContent = screenText;
+};
+
 function GetOperatorAndNumbers() {
     screenText = screenText.trim();
-    let arr = [];
-    if (screenText.includes("+")) {
-        arr = screenText.split("+");
-        arr.unshift("+");
+    if(screenText.includes("/0")){
+        return setResultScreen("Invalid Operation");
     }
-    else if (screenText.includes("-")) {
-        arr = screenText.split("-");
-        arr.unshift("-");
 
+    if(Number(screenText)){
+        return setResultScreen(screenText)
     }
-    else if (screenText.includes("/")) {
-        arr = screenText.split("/");
-        arr.unshift("/");
+    let result = undefined;
+    let increment = 2;
+    let start = 0;
+    let end = 3;
+    let extractedScreenText = screenText.substring(start,end);
+    while (isInputValid(extractedScreenText)) {
+        
+        let finalCalculationNumber = result ? result + extractedScreenText.substring(1,end) : extractedScreenText;
+        result = returnCalculatedResultForFurtherProcessing(finalCalculationNumber);
+        extractedScreenText = screenText.substring(start + increment, end + increment );
+        increment = increment +  2;
+    }
 
-    }
-    else if (screenText.includes("*")) {
-        arr = screenText.split("*");
-        arr.unshift("*");
+    setResultScreen(result);    
 
+}
+
+function isInputValid(params) {
+    let symbols = ['+','-','/','*'];
+    if(symbols.includes(params[1])){
+        if (Number(params[0]) && Number(params[2]) || Number(params[0])== 0 && Number(params[2])==0) {
+            return true;
+        }
+        return false;
     }
-    return arr;
+
+    return false;
 }
 
 
@@ -89,4 +114,35 @@ function clear() {
     result.textContent = '0';
     screen.textContent = '';
     screenText = '';
+}
+
+function returnCalculatedResultForFurtherProcessing(input){
+    let arr = [];
+    let result = 0;
+    if (input.includes("+")) {
+        arr = input.split("+");
+        arr.unshift("+");
+    }
+    else if (input.includes("-")) {
+        arr = input.split("-");
+        arr.unshift("-");
+
+    }
+    else if (input.includes("/")) {
+        arr = input.split("/");
+        arr.unshift("/");
+
+    }
+    else if (input.includes("*")) {
+        arr = input.split("*");
+        arr.unshift("*");
+
+    }
+
+    if(arr.length == 3){
+        result = operateFunction(arr[0], arr[1], arr[2]);
+        //If num is decimal then 5 place decimal 
+        result = result % 1 != 0 ? result.toFixed(5) : result;
+    }
+    return result;
 }

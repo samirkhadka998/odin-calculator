@@ -71,11 +71,19 @@
 
 .screen {
     flex: 1;
-    font-size: 54px;
+    font-size: 24px;
+    /* border: 1px solid; */
+    display: flex;
+    /* background: red; */
+    width: 100%;
 }
 
 
 div#result {
     flex: 3;
     font-size: 90px;
+}
+
+.equals {
+    flex: 2 !important;
 }
