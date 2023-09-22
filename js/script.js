@@ -1,10 +1,10 @@
 
 const inputDiv = document.querySelector('.inputs');
 
-const screen = document.querySelector('.screen');
+const info = document.querySelector('.info');
 
 const result = document.querySelector('#result');
-let screenText = '';
+let screenInputs = [];
 
 
 
@@ -25,13 +25,13 @@ function logInfo(e) {
         break;
 
         case "CE":
-            screenText = screenText.length >= 1 ? screenText.substring(0 , screenText.length -1) : '';
-            setInfoScreen(screenText);
+            screenInputs = screenInputs.length >= 1 ? screenInputs.substring(0 , screenInputs.length -1) : '';
+            setInfoScreen(screenInputs);
             break;
 
         default:
-            screenText += e.target.textContent;
-            setInfoScreen(screenText);
+            screenInputs.push(e.target.textContent);
+            setInfoScreen(screenInputs);
             break;
     }
 
@@ -43,29 +43,31 @@ function setResultScreen(message) {
 }
 
 function setInfoScreen(message){
-    screen.textContent = screenText;
+    info.textContent = convertToString(message);
 };
 
+function convertToString(arr){
+    return screenInputs.toString().replaceAll(",","");
+}
+
 function GetOperatorAndNumbers() {
-    screenText = screenText.trim();
-    if(screenText.includes("/0")){
+    if(convertToString(screenInputs).includes("/0")){
         return setResultScreen("Invalid Operation");
     }
 
-    if(Number(screenText)){
-        return setResultScreen(screenText)
+    if(Number(screenInputs)){
+        return setResultScreen(screenInputs)
     }
     let result = undefined;
     let increment = 2;
     let start = 0;
     let end = 3;
-    let extractedScreenText = screenText.substring(start,end);
-    while (isInputValid(extractedScreenText)) {
+    let extractedscreenInputs = screenInputs.splice(start,end);
+    while (isInputValid(extractedscreenInputs)) {
         
-        let finalCalculationNumber = result ? result + extractedScreenText.substring(1,end) : extractedScreenText;
-        result = returnCalculatedResultForFurtherProcessing(finalCalculationNumber);
-        extractedScreenText = screenText.substring(start + increment, end + increment );
-        increment = increment +  2;
+        let counterNumber = result ? result + extractedscreenInputs.substring(1,end) : extractedscreenInputs;
+        result = returnCalculatedResultForFurtherProcessing(counterNumber);
+        extractedscreenInputs = screenInputs.splice(start,end,result);
     }
 
     setResultScreen(result);    
@@ -112,8 +114,8 @@ function operateFunction(operator, param, param1) {
 
 function clear() {
     result.textContent = '0';
-    screen.textContent = '';
-    screenText = '';
+    info.textContent = '';
+    screenInputs = '';
 }
 
 function returnCalculatedResultForFurtherProcessing(input){
