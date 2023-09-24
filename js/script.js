@@ -27,6 +27,8 @@ function logInfo(e) {
             GetOperatorAndNumbers();
             break;
 
+        case "%":
+
         case "C":
             clear();
             break;
