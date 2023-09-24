@@ -47,6 +47,7 @@
     color: #fff;
     padding: 17px;
     flex-direction: column;
+    border: 7px solid #f0ffff;
 }
 
 .subinputs {
