@@ -6,6 +6,8 @@ const info = document.querySelector('.info');
 const result = document.querySelector('#result');
 let screenInputs = [];
 
+let lastActionEqual = false;
+
 
 
 var operatordivs = document.querySelectorAll('.subinputs div');
@@ -15,22 +17,43 @@ Array.from(operatordivs).forEach(d => {
 })
 
 function logInfo(e) {
+    if(lastActionEqual){
+        clear();
+        lastActionEqual = false;
+    }
     switch (e.target.textContent) {
         case "=":
+            lastActionEqual = true;
             GetOperatorAndNumbers();
             break;
 
         case "C":
             clear();
-        break;
+            break;
 
         case "CE":
-            screenInputs = screenInputs.length >= 1 ? screenInputs.substring(0 , screenInputs.length -1) : '';
+            if(screenInputs.length >= 1 ){
+                let lastItem = screenInputs.pop();
+
+                if(Number(lastItem) && lastItem.toString().length > 1){
+                    lastItem = lastItem[lastItem.length - 1];
+                    screenInputs.push(lastItem);
+                }
+                else if(screenInputs.length <= 0){
+                    screenInputs = [];
+                }
+                
+            }
             setInfoScreen(screenInputs);
             break;
 
         default:
-            screenInputs.push(e.target.textContent);
+            if (screenInputs.length > 0 && Number(screenInputs[screenInputs.length - 1]) && Number(e.target.textContent)) {
+                screenInputs[screenInputs.length - 1] = screenInputs[screenInputs.length - 1] + e.target.textContent;
+            }
+            else {
+                screenInputs.push(e.target.textContent);
+            }
             setInfoScreen(screenInputs);
             break;
     }
@@ -39,45 +62,47 @@ function logInfo(e) {
 
 function setResultScreen(message) {
     result.textContent = message;
-    
+
 }
 
-function setInfoScreen(message){
+function setInfoScreen(message) {
     info.textContent = convertToString(message);
 };
 
-function convertToString(arr){
-    return screenInputs.toString().replaceAll(",","");
+function convertToString(arr) {
+    return screenInputs.toString().replaceAll(",", "");
 }
 
 function GetOperatorAndNumbers() {
-    if(convertToString(screenInputs).includes("/0")){
+    if (convertToString(screenInputs).includes("/0")) {
         return setResultScreen("Invalid Operation");
     }
 
-    if(Number(screenInputs)){
-        return setResultScreen(screenInputs)
+    if (Number(convertToString(screenInputs))) {
+        return setResultScreen(convertToString(screenInputs))
     }
     let result = undefined;
-    let increment = 2;
     let start = 0;
     let end = 3;
-    let extractedscreenInputs = screenInputs.splice(start,end);
+    let extractedscreenInputs = screenInputs.splice(start, end);
     while (isInputValid(extractedscreenInputs)) {
-        
-        let counterNumber = result ? result + extractedscreenInputs.substring(1,end) : extractedscreenInputs;
-        result = returnCalculatedResultForFurtherProcessing(counterNumber);
-        extractedscreenInputs = screenInputs.splice(start,end,result);
+
+        //let calculationReady = result ? result + extractedscreenInputs.substring(1, end) : extractedscreenInputs;
+        result = operateFunction(extractedscreenInputs[1], extractedscreenInputs[0], extractedscreenInputs[2]);
+        result = result % 1 != 0 ? result.toFixed(5) : result;
+        screenInputs.unshift(result);
+        extractedscreenInputs = screenInputs.splice(start, end);
     }
 
-    setResultScreen(result);    
+    setResultScreen(result);
+    screenInputs.unshift(result);
 
 }
 
 function isInputValid(params) {
-    let symbols = ['+','-','/','*'];
-    if(symbols.includes(params[1])){
-        if (Number(params[0]) && Number(params[2]) || Number(params[0])== 0 && Number(params[2])==0) {
+    let symbols = ['+', '-', '/', '*'];
+    if (symbols.includes(params[1])) {
+        if (Number(params[0]) && Number(params[2]) || Number(params[0]) == 0 && Number(params[2]) == 0) {
             return true;
         }
         return false;
@@ -115,36 +140,6 @@ function operateFunction(operator, param, param1) {
 function clear() {
     result.textContent = '0';
     info.textContent = '';
-    screenInputs = '';
+    screenInputs = [];
 }
 
-function returnCalculatedResultForFurtherProcessing(input){
-    let arr = [];
-    let result = 0;
-    if (input.includes("+")) {
-        arr = input.split("+");
-        arr.unshift("+");
-    }
-    else if (input.includes("-")) {
-        arr = input.split("-");
-        arr.unshift("-");
-
-    }
-    else if (input.includes("/")) {
-        arr = input.split("/");
-        arr.unshift("/");
-
-    }
-    else if (input.includes("*")) {
-        arr = input.split("*");
-        arr.unshift("*");
-
-    }
-
-    if(arr.length == 3){
-        result = operateFunction(arr[0], arr[1], arr[2]);
-        //If num is decimal then 5 place decimal 
-        result = result % 1 != 0 ? result.toFixed(5) : result;
-    }
-    return result;
-}
